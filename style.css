@@ -1,0 +1,99 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: #c1a6ef;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* background-position: center; */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    background: linear-gradient(135deg, #8e44ad, #e91e63, #3498db);
+    background-size: 400% 400%;
+    animation: moverFondo 15s ease infinite;
+}
+
+header .titulo {
+    font-size: 4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    /* border-right: .15em solid orange; */
+    animation: typing 1.5s steps(13) forwards, blink .75s step-end infinite;
+    top: 0;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    font-family: 'Luckiest Guy', cursive;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  }
+
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 11.5ch } /* 13 caracteres en "Sopa de Letras" */
+  }
+
+  @keyframes blink {
+    50% { border-color: transparent }
+  }
+
+.nigga {
+    background-color: #3498db;
+    padding: 6px 100px;
+    border-radius: 50px;
+    position: absolute;
+    top: 7em;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.nigga select{
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+    outline: none;
+}
+
+/* Estilo común para todos los botones */
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* Estilo específico para el botón Jugar */
+  .botonjugar {
+    background-color: purple;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  }
+  
+  /* Estilo específico para el botón Ver Palabras */
+  .botonpalabras {
+    background-color: #48ac9b;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  }
+  
+  /* Efecto al pasar el mouse */
+  button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+    transition: 0.3s;
+  }
+
+.verpalabrastable  {
+    background-color: purple;
+    border: solid 1px rgba(255, 255, 255, 0.3);
+    border-collapse: collapse;
+    padding: 6px; 
+}
