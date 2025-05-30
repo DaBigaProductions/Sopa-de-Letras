@@ -1,63 +1,89 @@
 * {
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 
 body {
-    background: #c1a6ef;
-    background-repeat: no-repeat;
-    background-size: cover;
-    /* background-position: center; */
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 20px;
     background: linear-gradient(135deg, #8e44ad, #e91e63, #3498db);
     background-size: 400% 400%;
     animation: moverFondo 15s ease infinite;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+@keyframes moverFondo {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 header .titulo {
     font-size: 4rem;
     white-space: nowrap;
     overflow: hidden;
-    /* border-right: .15em solid orange; */
     animation: typing 1.5s steps(13) forwards, blink .75s step-end infinite;
-    top: 0;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
     font-family: 'Luckiest Guy', cursive;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-  }
-
-  @keyframes typing {
-    from { width: 0 }
-    to { width: 11.5ch } /* 13 caracteres en "Sopa de Letras" */
-  }
-
-  @keyframes blink {
-    50% { border-color: transparent }
-  }
-
-.nigga {
-    background-color: #3498db;
-    padding: 6px 100px;
-    border-radius: 50px;
-    position: absolute;
-    top: 7em;
-    left: 50%;
-    transform: translate(-50%);
+    text-align: center;
 }
 
-.nigga select{
+@keyframes typing {
+    from { width: 0 }
+    to { width: 11.5ch } /* 13 caracteres en "Sopa de Letras" */
+}
+
+@keyframes blink {
+    50% { border-color: transparent }
+}
+
+.seccion {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Estilo del contenedor del select */
+.nigga {
     background-color: #3498db;
-    border-color: #3498db;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.nigga select {
+    background-color: #2980b9;
+    border: none;
     color: white;
-    outline: none;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    appearance: none; /* Oculta la flecha por defecto */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%205'%3E%3Cpath%20fill='white'%20d='M2%200L0%202h4L2%200zM2%205l2-2H0l2%202z'/%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.nigga select:hover {
+    background-color: #1f6394;
+    transform: scale(1.02);
 }
 
 /* Estilo común para todos los botones */
@@ -68,49 +94,108 @@ button {
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
-  }
-  
-  /* Estilo específico para el botón Jugar */
-  .botonjugar {
+    transition: 0.3s;
+}
+
+/* Botón Jugar */
+.botonjugar {
     background-color: purple;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-  }
-  
-  /* Estilo específico para el botón Ver Palabras */
-  .botonpalabras {
+}
+
+/* Botón Ver Palabras */
+.botonpalabras {
     background-color: #48ac9b;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-  }
-  
-  /* Efecto al pasar el mouse */
-  button:hover {
+}
+
+/* Hover */
+button:hover {
     opacity: 0.9;
     transform: scale(1.05);
-    transition: 0.3s;
-  }
+}
 
+/* Contenedor de la tabla */
+.tabla-container {
+    overflow-x: auto;
+    max-width: 100%;
+    width: fit-content;
+    margin: 0 auto;
+    background-color: rgb(31, 0, 31);
+    border: 6px solid rgb(31, 0, 31);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+/* Tabla */
 .verpalabrastable {
     background-color: purple;
     border: solid 10px rgba(255, 255, 255, 0.3);
     border-collapse: collapse;
-   padding: 6px;
+    width: 100%;
+    table-layout: fixed;
+    color: white;
 }
 
-.verpalabrastable td,
-.verpalabrastable th {
-    padding: 8px;
+.verpalabrastable th,
+.verpalabrastable td {
+    padding: 20px;
+    word-wrap: break-word;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.verpalabrastable button {
+    background-color: rgb(31, 0, 31);
+    color: white;
+}
+
+/* Contenedor para formulario de palabras */
 .contenedorpalabras {
-  padding: 20px;
-  background-color: #f4f4f4;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  max-width: 600px;
-  margin: 20px auto;
+    width: 100%;
+    max-width: 800px;
+    background-color: rgb(31, 0, 31);
+    border: 6px solid rgb(31, 0, 31);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
 }
 
+.contenedorpalabras input {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
 
+.contenedorpalabras.newword {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 1rem;
+}
 
+.letra-btn {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+.letra-btn.seleccionado {
+    background-color: yellow;
+    font-weight: bold;
+}
+
+footer {
+  color: black;
+  padding: 0;
+  bottom: 0;
+  left: 0;
+  right: 0; 
+  position: fixed; 
+}
