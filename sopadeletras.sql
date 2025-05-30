@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-05-2025 a las 00:31:40
+-- Tiempo de generación: 30-05-2025 a las 02:59:51
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -47,7 +47,8 @@ INSERT INTO `palabras` (`id`, `palabra`, `cuadricula`) VALUES
 (7, 'FELICIDAD', 13),
 (8, 'VACACIONES', 14),
 (9, 'PASTEL', 15),
-(13, 'PALABRADIEZ', 16);
+(13, 'PALABRADIEZ', 16),
+(14, 'NUENAPALABRA', 9);
 
 -- --------------------------------------------------------
 
@@ -80,7 +81,7 @@ ALTER TABLE `palabras`
 -- AUTO_INCREMENT de la tabla `palabras`
 --
 ALTER TABLE `palabras`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
