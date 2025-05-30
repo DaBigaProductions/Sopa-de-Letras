@@ -16,7 +16,7 @@ function cargar(accion, cuadricula) {
     formData.append('accion', accion);
     formData.append('cuadricula', cuadricula);
 
-    fetch('index.php', {  // 👈 Aquí nos aseguramos de apuntar a index.php
+    fetch('index.php', {  
         method: 'POST',
         body: formData
     })
@@ -29,7 +29,7 @@ function eliminarPalabra(id, cuadricula) {
     formData.append('accion', 'eliminar');
     formData.append('id', id);
 
-    fetch('index.php', {  // 👈 También apuntamos a index.php
+    fetch('index.php', {  
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', cuadricula));
@@ -43,7 +43,7 @@ function agregarPalabra(event, cuadricula) {
     formData.append('palabra', input.value);
     formData.append('cuadricula', cuadricula);
 
-    fetch('index.php', {  // 👈 Siempre usar index.php
+    fetch('index.php', {  
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', cuadricula));

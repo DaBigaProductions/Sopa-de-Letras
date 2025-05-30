@@ -91,9 +91,26 @@ button {
     transition: 0.3s;
   }
 
-.verpalabrastable  {
+.verpalabrastable {
     background-color: purple;
-    border: solid 1px rgba(255, 255, 255, 0.3);
+    border: solid 10px rgba(255, 255, 255, 0.3);
     border-collapse: collapse;
-    padding: 6px; 
+   padding: 6px;
 }
+
+.verpalabrastable td,
+.verpalabrastable th {
+    padding: 8px;
+}
+
+.contenedorpalabras {
+  padding: 20px;
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+
+
