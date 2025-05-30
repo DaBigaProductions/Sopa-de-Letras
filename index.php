@@ -7,12 +7,12 @@ $accion = $_POST['accion'] ?? '';
 $cuadricula = $_POST['cuadricula'] ?? '';
 
 if ($accion === 'jugar') {
-    // Seleccionar palabra aleatoria
+    // Obtener palabra aleatoria
     $res = $conn->query("SELECT palabra FROM palabras WHERE cuadricula = $cuadricula ORDER BY RAND() LIMIT 1");
     $row = $res->fetch_assoc();
-    $palabra = strtoupper($row['palabra']);
+    $palabraOriginal = strtoupper($row['palabra']);
+    $palabra = $palabraOriginal;
 
-    // Crear matriz vacía de letras aleatorias
     $matriz = [];
     $letras = range('A', 'Z');
 
@@ -22,23 +22,24 @@ if ($accion === 'jugar') {
         }
     }
 
-    // Insertar la palabra en dirección aleatoria
-    $long = strlen($palabra);
+    // Dirección aleatoria
     $direcciones = ['horizontal', 'vertical', 'diagonal'];
     $direccion = $direcciones[array_rand($direcciones)];
     $reversa = rand(0, 1) === 1;
 
     if ($reversa) $palabra = strrev($palabra);
+    $long = strlen($palabra);
 
+    // Insertar palabra en matriz
     $coloca = false;
     while (!$coloca) {
         $x = rand(0, $cuadricula - 1);
         $y = rand(0, $cuadricula - 1);
         $dx = $dy = 0;
 
-        if ($direccion === 'horizontal') { $dx = 1; }
-        if ($direccion === 'vertical') { $dy = 1; }
-        if ($direccion === 'diagonal') { $dx = $dy = 1; }
+        if ($direccion === 'horizontal') $dx = 1;
+        if ($direccion === 'vertical') $dy = 1;
+        if ($direccion === 'diagonal') $dx = $dy = 1;
 
         $fin_x = $x + $dx * ($long - 1);
         $fin_y = $y + $dy * ($long - 1);
@@ -51,21 +52,33 @@ if ($accion === 'jugar') {
         }
     }
 
-    // Mostrar la palabra a buscar y la matriz en HTML
-    echo "<h3>Busca la palabra: <span id='palabra-meta'>$palabra</span></h3>";
+    // Mostrar palabra oculta (para verificar)
+    echo "<h3>Busca la palabra: <strong>$palabraOriginal</strong></h3>";
+    echo "<input type='hidden' id='respuesta-correcta' value='$palabra'>";
+
     echo "<table id='sopa'>";
     for ($i = 0; $i < $cuadricula; $i++) {
         echo "<tr>";
         for ($j = 0; $j < $cuadricula; $j++) {
-            echo "<td data-x='$j' data-y='$i'>{$matriz[$i][$j]}</td>";
+            $letra = $matriz[$i][$j];
+            echo "<td>
+                    <button class='letra-btn' 
+                            data-x='$j' data-y='$i'
+                            onmousedown='empezarSeleccion(event)'
+                            onmouseover='continuarSeleccion(event)'
+                            onmouseup='terminarSeleccion(event)'>
+                        $letra
+                    </button>
+                </td>";
         }
         echo "</tr>";
     }
     echo "</table>";
+
     echo "<div>Seleccionado: <span id='seleccion'></span></div>";
     echo "<button onclick='reiniciarSeleccion()'>Reiniciar</button> ";
     echo "<button onclick='verificarSeleccion()'>Verificar</button>";
-    echo "<input type='hidden' id='respuesta-correcta' value='$palabra'>";
+
     exit;
 }
 
@@ -96,8 +109,8 @@ if ($accion === 'ver_palabras') {
         </tr>";
     }
     echo "</table>
-    <form onsubmit=\"agregarPalabra(event, $cuadricula)\">
-        <input type='text' name='nueva' placeholder='Nueva palabra'>
+    <form class='newword' onsubmit=\"agregarPalabra(event, $cuadricula)\">
+        <input type='text' name='nueva' placeholder='Nueva palabra' pattern='[A-Za-zÁÉÍÓÚáéíóúÑñ]+' title='Solo letras, sin números ni caracteres especiales' required>
         <button type='submit'>Agregar</button>
     </form>";
     echo "</div>";
