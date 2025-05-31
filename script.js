@@ -1,6 +1,7 @@
 const select = document.getElementById('tamano');
 const botones = document.getElementById('botones');
 const resultado = document.getElementById('resultado');
+let intervaloCronometro = null;
 
 select.addEventListener('change', () => {
     const val = select.value;
@@ -23,7 +24,16 @@ function cargar(accion, cuadricula) {
         body: formData
     })
     .then(res => res.text())
-    .then(html => resultado.innerHTML = html);
+    .then(html => {
+        resultado.innerHTML = html;
+
+        if (accion === 'jugar') {
+            setTimeout(() => {
+                window.inicioJuego = Date.now() / 1000;
+                iniciarCronometro();
+            }, 100);
+        }
+    });
 }
 
 function eliminarPalabra(id, cuadricula) {
@@ -69,88 +79,118 @@ function editarPalabra(id, palabra) {
 let seleccion = [];
 let seleccionando = false;
 let direccionFija = null;
-let inicioX = null;
-let inicioY = null;
 
 function empezarSeleccion(event) {
+    if (!event.target.classList.contains('letra-btn')) return;
+
     seleccionando = true;
     reiniciarSeleccion();
+
     const btn = event.target;
-    inicioX = parseInt(btn.dataset.x);
-    inicioY = parseInt(btn.dataset.y);
-    direccionFija = null; // Se determinará con la segunda letra
-    seleccionarLetra(btn);
+    btn.classList.add('seleccionado');
+    seleccion.push(btn);
+    direccionFija = null;
+
+    document.getElementById('seleccion').textContent = btn.textContent;
 }
 
 function continuarSeleccion(event) {
     if (!seleccionando || !event.target.classList.contains('letra-btn')) return;
 
     const btn = event.target;
-    const x = parseInt(btn.dataset.x);
-    const y = parseInt(btn.dataset.y);
-
     if (btn.classList.contains('seleccionado')) return;
 
-    const seleccionados = document.querySelectorAll('.letra-btn.seleccionado');
+    const anterior = seleccion[seleccion.length - 1];
+    const dx = parseInt(btn.dataset.x) - parseInt(anterior.dataset.x);
+    const dy = parseInt(btn.dataset.y) - parseInt(anterior.dataset.y);
 
-    if (seleccionados.length === 1) {
-        const first = seleccionados[0];
-        const x1 = parseInt(first.dataset.x);
-        const y1 = parseInt(first.dataset.y);
+    if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || (dx === 0 && dy === 0)) return;
 
-        const dx = x - x1;
-        const dy = y - y1;
-
-        if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || (dx === 0 && dy === 0)) return;
-
-        // Guardar dirección como tupla (dx, dy)
+    if (seleccion.length === 1) {
         direccionFija = [dx, dy];
-
     } else {
-        const lastBtn = seleccionados[seleccionados.length - 1];
-        const lastX = parseInt(lastBtn.dataset.x);
-        const lastY = parseInt(lastBtn.dataset.y);
-
-        const dx = x - lastX;
-        const dy = y - lastY;
-
-        // Comparar dirección actual con la dirección fija
-        if (!direccionFija || dx !== direccionFija[0] || dy !== direccionFija[1]) return;
+        const [fx, fy] = direccionFija;
+        if (dx !== fx || dy !== fy) return;
     }
 
-    seleccionarLetra(btn);
-}
-
-function terminarSeleccion() {
-    seleccionando = false;
-}
-
-function seleccionarLetra(btn) {
     btn.classList.add('seleccionado');
-    seleccion.push(btn.textContent.trim());
-    document.getElementById('seleccion').textContent = seleccion.join('');
+    seleccion.push(btn);
+    actualizarTextoSeleccionado();
+}
+
+function actualizarTextoSeleccionado() {
+    const texto = seleccion.map(b => b.textContent.trim()).join('');
+    document.getElementById('seleccion').textContent = texto;
 }
 
 function reiniciarSeleccion() {
     document.querySelectorAll('.letra-btn.seleccionado').forEach(btn => btn.classList.remove('seleccionado'));
     seleccion = [];
     direccionFija = null;
-    inicioX = null;
-    inicioY = null;
     document.getElementById('seleccion').textContent = '';
 }
 
 function verificarSeleccion() {
-    const seleccionada = seleccion.join('').toUpperCase();
+    const seleccionada = seleccion.map(b => b.textContent.trim()).join('').toUpperCase();
     const correcta = document.getElementById('respuesta-correcta').value.toUpperCase();
     const invertida = correcta.split('').reverse().join('');
 
     if (seleccionada === correcta || seleccionada === invertida) {
-        alert("😮😮😮Has encontrado la palabra, eres muy inteligente.");
+        alert("😮 Has encontrado la palabra, ¡muy bien!");
+
+        detenerCronometro(); // ⏹ Detiene el cronómetro
+
+        const fin = performance.now() / 1000; // En segundos
+        const demora = fin - window.inicioJuego;
+        const cuadricula = parseInt(document.getElementById('tamano').value);
+        const palabra = correcta;
+
+        const formData = new FormData();
+        formData.append('palabra', palabra);
+        formData.append('cuadricula', cuadricula);
+        const minutos = Math.floor(demora / 60).toString().padStart(2, '0');
+        const segundos = Math.floor(demora % 60).toString().padStart(2, '0');
+        formData.append('demora', `${minutos}:${segundos}`);
+
+        fetch('record.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.text())
+        .then(msg => {
+            if (msg === "nuevo_record") {
+                alert("🎉 ¡Nuevo récord guardado!");
+            } else {
+                alert("✅ Palabra correcta. No es nuevo récord.");
+            }
+        });
     } else {
-        alert("😒😒😒No fuiste capaz de encontrar la palabra?, sos un inútil.");
+        alert("😒 Esa no es la palabra correcta.");
     }
 }
 
+// ⏱ Funciones del cronómetro
+function iniciarCronometro() {
+    if (intervaloCronometro) clearInterval(intervaloCronometro);
 
-document.addEventListener('mouseup', terminarSeleccion);
+    intervaloCronometro = setInterval(() => {
+        const ahora = Date.now() / 1000;
+        const diferencia = ahora - window.inicioJuego;
+
+        const minutos = Math.floor(diferencia / 60).toString().padStart(2, '0');
+        const segundos = Math.floor(diferencia % 60).toString().padStart(2, '0');
+
+        document.getElementById('cronometro').textContent = `${minutos}:${segundos}`;
+    }, 1000);
+}
+
+function detenerCronometro() {
+    clearInterval(intervaloCronometro);
+}
+
+// Eventos del mouse
+document.addEventListener('mousedown', empezarSeleccion);
+document.addEventListener('mouseover', continuarSeleccion);
+document.addEventListener('mouseup', () => {
+    seleccionando = false;
+});
