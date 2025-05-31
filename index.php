@@ -56,6 +56,7 @@ if ($accion === 'jugar') {
     echo "<h3>Busca la palabra: <strong>$palabraOriginal</strong></h3>";
     echo "<input type='hidden' id='respuesta-correcta' value='$palabra'>";
 
+
     echo "<table id='sopa'>";
     for ($i = 0; $i < $cuadricula; $i++) {
         echo "<tr>";
@@ -140,3 +141,4 @@ if ($accion === 'editar' && isset($_POST['id']) && isset($_POST['palabra'])) {
     exit("OK");
 }
 ?>
+
