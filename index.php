@@ -140,6 +140,5 @@ if ($accion === 'editar' && isset($_POST['id']) && isset($_POST['palabra'])) {
     $stmt->execute();
     exit("OK");
 }
-
 ?>
 

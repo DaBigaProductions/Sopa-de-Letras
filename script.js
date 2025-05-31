@@ -19,7 +19,7 @@ function cargar(accion, cuadricula) {
     formData.append('accion', accion);
     formData.append('cuadricula', cuadricula);
 
-    fetch('index.php', {  
+    fetch('index.php', {
         method: 'POST',
         body: formData
     })
@@ -41,7 +41,7 @@ function eliminarPalabra(id, cuadricula) {
     formData.append('accion', 'eliminar');
     formData.append('id', id);
 
-    fetch('index.php', {  
+    fetch('index.php', {
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', cuadricula));
@@ -55,7 +55,7 @@ function agregarPalabra(event, cuadricula) {
     formData.append('palabra', input.value);
     formData.append('cuadricula', cuadricula);
 
-    fetch('index.php', {  
+    fetch('index.php', {
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', cuadricula));
@@ -137,39 +137,41 @@ function verificarSeleccion() {
 
     if (seleccionada === correcta || seleccionada === invertida) {
         alert("😮 Has encontrado la palabra, ¡muy bien!");
+        detenerCronometro();
 
-        detenerCronometro(); // ⏹ Detiene el cronómetro
-
-        const fin = performance.now() / 1000; // En segundos
-        const demora = fin - window.inicioJuego;
-        const cuadricula = parseInt(document.getElementById('tamano').value);
-        const palabra = correcta;
+        const tiempoActual = document.getElementById('cronometro').textContent;
+        alert(`⏱ Tu tiempo fue: ${tiempoActual}`);
 
         const formData = new FormData();
-        formData.append('palabra', palabra);
-        formData.append('cuadricula', cuadricula);
-        const minutos = Math.floor(demora / 60).toString().padStart(2, '0');
-        const segundos = Math.floor(demora % 60).toString().padStart(2, '0');
-        formData.append('demora', `${minutos}:${segundos}`);
+        formData.append('palabra', correcta); // SIEMPRE la original
+        formData.append('cuadricula', parseInt(document.getElementById('tamano').value));
+        formData.append('demora', tiempoActual);
 
         fetch('record.php', {
             method: 'POST',
             body: formData
         })
-        .then(res => res.text())
+        .then(response => response.text())
         .then(msg => {
-            if (msg === "nuevo_record") {
-                alert("🎉 ¡Nuevo récord guardado!");
-            } else {
-                alert("✅ Palabra correcta. No es nuevo récord.");
+            // Limpieza de mensaje si viene con HTML
+            resultado.innerHTML = msg;
+
+            if (msg.includes("Top 3")) {
+                alert("🎉 ¡Tu tiempo fue registrado en el Top 3!");
+            } else if (msg.includes("No mejoras el tiempo")) {
+                alert("😌 Buen intento, pero no entraste en el Top 3.");
+            } else if (msg.includes("Datos inválidos")) {
+                alert("⚠️ Datos inválidos, por favor revisa.");
+            } else if (msg.includes("Error al guardar")) {
+                alert("❌ Error al guardar el registro.");
             }
         });
+
     } else {
         alert("😒 Esa no es la palabra correcta.");
     }
 }
 
-// ⏱ Funciones del cronómetro
 function iniciarCronometro() {
     if (intervaloCronometro) clearInterval(intervaloCronometro);
 
@@ -188,7 +190,6 @@ function detenerCronometro() {
     clearInterval(intervaloCronometro);
 }
 
-// Eventos del mouse
 document.addEventListener('mousedown', empezarSeleccion);
 document.addEventListener('mouseover', continuarSeleccion);
 document.addEventListener('mouseup', () => {

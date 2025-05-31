@@ -5,47 +5,50 @@ $palabra = $_POST['palabra'] ?? '';
 $cuadricula = (int) ($_POST['cuadricula'] ?? 0);
 $demora = $_POST['demora'] ?? ''; // Formato mm:ss
 
-function tiempoASegundos($tiempo) {
-    list($min, $seg) = explode(':', $tiempo);
-    return (int)$min * 60 + (int)$seg;
+function generarTop3HTML($conn, $cuadricula) {
+    $top = $conn->prepare("SELECT palabra, demora FROM records WHERE cuadricula = ? ORDER BY demora ASC LIMIT 3");
+    $top->bind_param("i", $cuadricula);
+    $top->execute();
+    $resultTop = $top->get_result();
+
+    $html = "<h3>Top 3 para cuadrícula $cuadricula:</h3><ol>";
+    while ($row = $resultTop->fetch_assoc()) {
+        $html .= "<li>" . htmlspecialchars($row['palabra']) . " - " . $row['demora'] . "</li>";
+    }
+    $html .= "</ol>";
+    return $html;
 }
 
-if ($palabra && $cuadricula && preg_match('/^\d{2}:\d{2}$/', $demora)) {
-    $demoraSegundos = tiempoASegundos($demora);
+if ($palabra && $cuadricula && preg_match('/^\d{1,2}:\d{2}$/', $demora)) {
+    list($min, $seg) = explode(':', $demora);
+    $tiempoSQL = sprintf('00:%02d:%02d', $min, $seg); // HH:MM:SS
 
-    // Obtener hasta 3 mejores tiempos existentes para esa palabra y cuadricula
-    $stmt = $conn->prepare("SELECT * FROM records WHERE palabra = ? AND cuadricula = ? ORDER BY STR_TO_DATE(demora, '%i:%s') ASC");
-    $stmt->bind_param("si", $palabra, $cuadricula);
-    $stmt->execute();
-    $resultados = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $check = $conn->prepare("SELECT id, demora FROM records WHERE cuadricula = ? ORDER BY demora ASC");
+    $check->bind_param("i", $cuadricula);
+    $check->execute();
+    $result = $check->get_result();
 
-    if (count($resultados) < 3) {
-        // Menos de 3 tiempos, guardar directamente
-        $stmtInsert = $conn->prepare("INSERT INTO records (fecha, palabra, cuadricula, demora) VALUES (NOW(), ?, ?, ?)");
-        $stmtInsert->bind_param("sis", $palabra, $cuadricula, $demora);
-        $stmtInsert->execute();
-        echo "nuevo_record";
+    if ($result->num_rows < 3) {
+        $stmt = $conn->prepare("INSERT INTO records (fecha, palabra, cuadricula, demora) VALUES (NOW(), ?, ?, ?)");
+        $stmt->bind_param("sis", $palabra, $cuadricula, $tiempoSQL);
+        $stmt->execute();
+        echo "registro_guardado\n" . generarTop3HTML($conn, $cuadricula);
     } else {
-        // Ya hay 3 récords, verificar si este nuevo es mejor que el peor
-        $peor = $resultados[2]; // tercer peor (porque están ordenados ascendente)
-        $peorSegundos = tiempoASegundos($peor['demora']);
-
-        if ($demoraSegundos < $peorSegundos) {
-            // El nuevo es mejor que el peor, reemplazar
-            $stmtDelete = $conn->prepare("DELETE FROM records WHERE palabra = ? AND cuadricula = ? AND demora = ?");
-            $stmtDelete->bind_param("sis", $palabra, $cuadricula, $peor['demora']);
-            $stmtDelete->execute();
-
-            $stmtInsert = $conn->prepare("INSERT INTO records (fecha, palabra, cuadricula, demora) VALUES (NOW(), ?, ?, ?)");
-            $stmtInsert->bind_param("sis", $palabra, $cuadricula, $demora);
-            $stmtInsert->execute();
-
-            echo "nuevo_record";
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $peor = $rows[2]; // tercer peor
+        if ($tiempoSQL < $peor['demora']) {
+            // Invertir palabra para guardarla al derecho
+            $palabra = strrev($palabra);
+            $stmt = $conn->prepare("UPDATE records SET fecha = NOW(), palabra = ?, demora = ? WHERE id = ?");
+            $stmt->bind_param("ssi", $palabra, $tiempoSQL, $peor['id']);
+            $stmt->execute();
+            echo "registro_actualizado\n" . generarTop3HTML($conn, $cuadricula);
         } else {
-            echo "sin_cambios";
+            echo "no_mejora\n" . generarTop3HTML($conn, $cuadricula);
         }
     }
 } else {
     echo "datos_invalidos";
 }
 ?>
+
