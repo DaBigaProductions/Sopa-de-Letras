@@ -61,6 +61,7 @@ INSERT INTO `palabras` (`id`, `palabra`, `cuadricula`) VALUES
 --
 
 CREATE TABLE `records` (
+  `id` int(11) NOT NULL,
   `fecha` timestamp(6) NULL DEFAULT NULL,
   `cuadricula` int(11) DEFAULT NULL,
   `palabra` varchar(10) DEFAULT NULL,
@@ -77,6 +78,9 @@ CREATE TABLE `records` (
 ALTER TABLE `palabras`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `records`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
@@ -86,6 +90,9 @@ ALTER TABLE `palabras`
 --
 ALTER TABLE `palabras`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+ALTER TABLE `records`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -4,6 +4,7 @@ const resultado = document.getElementById('resultado');
 let intervaloCronometro = null;
 
 select.addEventListener('change', () => {
+    detenerCronometro();
     const val = select.value;
     botones.innerHTML = `
         <div class="contenedorbotonesjugarverpalabrsas">
@@ -15,6 +16,8 @@ select.addEventListener('change', () => {
 });
 
 function cargar(accion, cuadricula) {
+    detenerCronometro();
+
     const formData = new FormData();
     formData.append('accion', accion);
     formData.append('cuadricula', cuadricula);
@@ -156,7 +159,7 @@ function verificarSeleccion() {
             // Limpieza de mensaje si viene con HTML
             resultado.innerHTML = msg;
 
-            if (msg.includes("Top 3")) {
+            if (msg.includes("✅ Registro guardado en el Top 3")) {
                 alert("🎉 ¡Tu tiempo fue registrado en el Top 3!");
             } else if (msg.includes("No mejoras el tiempo")) {
                 alert("😌 Buen intento, pero no entraste en el Top 3.");

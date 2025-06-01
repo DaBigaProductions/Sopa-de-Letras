@@ -54,7 +54,7 @@ if ($accion === 'jugar') {
 
     // Mostrar palabra oculta (para verificar)
     echo "<h3>Busca la palabra: <strong>$palabraOriginal</strong></h3>";
-    echo "<input type='hidden' id='respuesta-correcta' value='$palabra'>";
+    echo "<input type='hidden' id='respuesta-correcta' value='$palabraOriginal'>";
 
 
     echo "<table id='sopa'>";

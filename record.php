@@ -11,12 +11,20 @@ function generarTop3HTML($conn, $cuadricula) {
     $top->execute();
     $resultTop = $top->get_result();
 
-    $html = "<h3>Top 3 para cuadrícula $cuadricula:</h3><ol>";
+    $html = "<table class='verpalabrastable' border='1'>";
+    $html .= "<thead><tr><th colspan='2'>Top 3 para cuadrícula $cuadricula</th></tr>";
+    $html .= "<tr><th>Palabra</th><th>Tiempo</th></tr></thead><tbody>";
     while ($row = $resultTop->fetch_assoc()) {
-        $html .= "<li>" . htmlspecialchars($row['palabra']) . " - " . $row['demora'] . "</li>";
+        $html .= "<tr><td>" . htmlspecialchars($row['palabra']) . "</td><td>" . $row['demora'] . "</td></tr>";
     }
-    $html .= "</ol>";
+    $html .= "</tbody></table>";
     return $html;
+}
+
+function mensajeTabla($mensaje) {
+    return "<table class='verpalabrastable' border='1' style='margin-top:10px'>
+                <tr><th colspan='2'>$mensaje</th></tr>
+            </table>";
 }
 
 if ($palabra && $cuadricula && preg_match('/^\d{1,2}:\d{2}$/', $demora)) {
@@ -32,23 +40,20 @@ if ($palabra && $cuadricula && preg_match('/^\d{1,2}:\d{2}$/', $demora)) {
         $stmt = $conn->prepare("INSERT INTO records (fecha, palabra, cuadricula, demora) VALUES (NOW(), ?, ?, ?)");
         $stmt->bind_param("sis", $palabra, $cuadricula, $tiempoSQL);
         $stmt->execute();
-        echo "registro_guardado\n" . generarTop3HTML($conn, $cuadricula);
+        echo mensajeTabla("✅ Registro guardado en el Top 3") . generarTop3HTML($conn, $cuadricula);
     } else {
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $peor = $rows[2]; // tercer peor
         if ($tiempoSQL < $peor['demora']) {
-            // Invertir palabra para guardarla al derecho
-            $palabra = strrev($palabra);
             $stmt = $conn->prepare("UPDATE records SET fecha = NOW(), palabra = ?, demora = ? WHERE id = ?");
             $stmt->bind_param("ssi", $palabra, $tiempoSQL, $peor['id']);
             $stmt->execute();
-            echo "registro_actualizado\n" . generarTop3HTML($conn, $cuadricula);
+            echo mensajeTabla("✅ Registro guardado en el Top 3") . generarTop3HTML($conn, $cuadricula);
         } else {
-            echo "no_mejora\n" . generarTop3HTML($conn, $cuadricula);
+            echo mensajeTabla("❌ No mejora el tiempo actual") . generarTop3HTML($conn, $cuadricula);
         }
-    }
+    }    
 } else {
-    echo "datos_invalidos";
+    echo mensajeTabla("⚠️ Datos inválidos");
 }
 ?>
-
