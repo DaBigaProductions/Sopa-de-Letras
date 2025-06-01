@@ -87,7 +87,12 @@ function empezarSeleccion(event) {
     if (!event.target.classList.contains('letra-btn')) return;
 
     seleccionando = true;
-    reiniciarSeleccion();
+
+    // Limpia selección previa pero SIN recargar la sopa
+    document.querySelectorAll('.letra-btn.seleccionado').forEach(btn => btn.classList.remove('seleccionado'));
+    seleccion = [];
+    direccionFija = null;
+    document.getElementById('seleccion').textContent = '';
 
     const btn = event.target;
     btn.classList.add('seleccionado');
@@ -121,6 +126,7 @@ function continuarSeleccion(event) {
     actualizarTextoSeleccionado();
 }
 
+
 function actualizarTextoSeleccionado() {
     const texto = seleccion.map(b => b.textContent.trim()).join('');
     document.getElementById('seleccion').textContent = texto;
@@ -128,10 +134,16 @@ function actualizarTextoSeleccionado() {
 
 function reiniciarSeleccion() {
     document.querySelectorAll('.letra-btn.seleccionado').forEach(btn => btn.classList.remove('seleccionado'));
+    
     seleccion = [];
     direccionFija = null;
     document.getElementById('seleccion').textContent = '';
+    
+    const tamano = parseInt(document.getElementById('tamano').value);
+
+    cargar('jugar', tamano);
 }
+
 
 function verificarSeleccion() {
     const seleccionada = seleccion.map(b => b.textContent.trim()).join('').toUpperCase();
