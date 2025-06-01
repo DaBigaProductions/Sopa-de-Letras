@@ -43,7 +43,7 @@ if ($palabra && $cuadricula && preg_match('/^\d{1,2}:\d{2}$/', $demora)) {
         echo mensajeTabla("✅ Registro guardado en el Top 3") . generarTop3HTML($conn, $cuadricula);
     } else {
         $rows = $result->fetch_all(MYSQLI_ASSOC);
-        $peor = $rows[2]; // tercer peor
+        $peor = $rows[2]; 
         if ($tiempoSQL < $peor['demora']) {
             $stmt = $conn->prepare("UPDATE records SET fecha = NOW(), palabra = ?, demora = ? WHERE id = ?");
             $stmt->bind_param("ssi", $palabra, $tiempoSQL, $peor['id']);

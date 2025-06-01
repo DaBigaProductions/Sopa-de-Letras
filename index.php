@@ -2,7 +2,7 @@
 // Conexión
 $conn = new mysqli("localhost", "root", "", "sopadeletras");
 
-// Procesamiento de acciones (vía POST o GET)
+// Procesamiento de acciones
 $accion = $_POST['accion'] ?? '';
 $cuadricula = $_POST['cuadricula'] ?? '';
 
@@ -52,7 +52,7 @@ if ($accion === 'jugar') {
         }
     }
 
-    // Mostrar palabra oculta (para verificar)
+    // Mostrar palabra oculta 
     echo "<h3>Busca la palabra: <strong>$palabraOriginal</strong></h3>";
     echo "<input type='hidden' id='respuesta-correcta' value='$palabraOriginal'>";
 
