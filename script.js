@@ -22,7 +22,7 @@ function cargar(accion, cuadricula) {
     formData.append('accion', accion);
     formData.append('cuadricula', cuadricula);
 
-    fetch('index.php', {
+    fetch('eluno.php', {
         method: 'POST',
         body: formData
     })
@@ -44,7 +44,7 @@ function eliminarPalabra(id, cuadricula) {
     formData.append('accion', 'eliminar');
     formData.append('id', id);
 
-    fetch('index.php', {
+    fetch('eluno.php', {
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', cuadricula));
@@ -58,7 +58,7 @@ function agregarPalabra(event, cuadricula) {
     formData.append('palabra', input.value);
     formData.append('cuadricula', cuadricula);
 
-    fetch('index.php', {
+    fetch('eluno.php', {
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', cuadricula));
@@ -73,7 +73,7 @@ function editarPalabra(id, palabra) {
     formData.append('id', id);
     formData.append('palabra', nueva);
 
-    fetch('index.php', {
+    fetch('eluno.php', {
         method: 'POST',
         body: formData
     }).then(() => cargar('ver_palabras', document.getElementById('tamano').value));
